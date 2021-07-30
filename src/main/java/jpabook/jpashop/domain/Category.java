@@ -17,7 +17,7 @@ public class Category {
 
     private String name;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id")
     private Category parent;
 
@@ -35,5 +35,9 @@ public class Category {
     private List<Item> items = new ArrayList<>();
 
 
+    public void addChildCategory(Category child) {
+        this.addChildCategory(child);
+        child.setParent(this);
+    }
 
 }
