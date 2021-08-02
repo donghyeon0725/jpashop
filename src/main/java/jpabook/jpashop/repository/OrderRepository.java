@@ -7,7 +7,6 @@ import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
 import javax.persistence.EntityManager;
-import javax.persistence.JoinTable;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
 import java.util.ArrayList;
@@ -48,5 +47,29 @@ public class OrderRepository {
         cq.where(cb.and(criteria.toArray(new Predicate[criteria.size()])));
         TypedQuery<Order> query = em.createQuery(cq).setMaxResults(1000);
         return  query.getResultList();
+    }
+
+    public List<Order> findOrdersFetch() {
+        return em.createQuery("select o from Order o join fetch o.delivery d join fetch o.member m", Order.class).getResultList();
+    }
+
+    public List<Order> findOrdersFetchWithOrderItem() {
+        return em.createQuery("select o from Order o join fetch o.delivery d join fetch o.member m join fetch o.orderItems i", Order.class)
+                .getResultList();
+    }
+
+    public List<Order> findOrdersFetchWithOrderItemDistinct() {
+        return em.createQuery("select distinct o from Order o join fetch o.delivery d join fetch o.member m join fetch o.orderItems oi join fetch oi.item i", Order.class)
+                /*.setFirstResult(1)
+                .setMaxResults(100)*/
+                .getResultList();
+    }
+
+
+    public List<Order> findOrdersFetchWithOrderItemBatch(int offset, int limit) {
+        return em.createQuery("select o from Order o join fetch o.delivery d join fetch o.member m", Order.class)
+                .setFirstResult(offset)
+                .setMaxResults(limit)
+                .getResultList();
     }
 }
